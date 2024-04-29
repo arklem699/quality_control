@@ -1,5 +1,8 @@
 from django.http import HttpResponse
 from django.urls import reverse
+from django.views import View
+from django.views.generic import ListView, DetailView
+from .models import BugReport, FeatureRequest
 
 
 def index(request):
@@ -9,17 +12,47 @@ def index(request):
     return HttpResponse(html)
 
 
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        bug_list_url = reverse('quality_control:bug_list')
+        feature_list_url = reverse('quality_control:feature_list')
+        html = f"<h1>Система контроля качества</h1><a href='{bug_list_url}'>Список всех багов</a><br><a href='{feature_list_url}'>Запросы на улучшение</a>"
+        return HttpResponse(html)
+
+
 def bug_list(request):
-    return HttpResponse('<h1>Cписок отчетов об ошибках</h1>')
+    bugs = BugReport.objects.all()
+    bugs_html = '<h1>Список багов</h1><ul>'
+    for bug in bugs:
+        bugs_html += f'<li><a href="{bug.id}/">{bug.title}</a><br>{bug.status}</li>'
+    bugs_html += "</ul>"
+    return HttpResponse(bugs_html)
 
 
-def bug_detail(request, bug_id):
-    return HttpResponse(f"Детали бага {bug_id}")
+class BugDetailView(DetailView):
+    model = BugReport
+    pk_url_kwarg = 'bug_id'
+
+    def get(self, request, *args, **kwargs):
+        bug = self.get_object()
+        response_html = f'<h1>{bug.title}</h1><p>{bug.description}</p><br>{bug.status}<br>{bug.priority}<br>{bug.project}<br>{bug.task}'
+        return HttpResponse(response_html)
 
 
 def feature_list(request):
-    return HttpResponse('<h1>Список запросов на улучшение</h1>')
+    features = FeatureRequest.objects.all()
+    features_html = '<h1>Список запросов на улучшение</h1><ul>'
+    for feature in features:
+        features_html += f'<li><a href="{feature.id}/">{feature.title}</a><br>{feature.status}</li>'
+    features_html += "</ul>"
+    return HttpResponse(features_html)
 
 
-def feature_detail(request, feature_id):
-    return HttpResponse(f"Детали улучшения {feature_id}")
+class FeatureDetailView(DetailView):
+    model = FeatureRequest
+    pk_url_kwarg = 'feature_id'
+
+    def get(self, request, *args, **kwargs):
+        feature = self.get_object()
+        response_html = f'<h1>{feature.title}</h1><p>{feature.description}</p><br>{feature.status}<br>{feature.priority}<br>{feature.project}<br>{feature.task}'
+        return HttpResponse(response_html)
