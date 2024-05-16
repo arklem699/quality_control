@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-from project_tracker.secret_settings import *
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -9,6 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+
+SECRET_KEY = 'django-insecure-hm!%x(qx@3um*dod4nba@lob59o%rsr(-921k_gq5@2udy#$d6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
